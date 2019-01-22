@@ -2,6 +2,10 @@
 # IntelliJ project files
 .idea
 
+package-lock.json
+.DS_Store
+.eslintrc.json
+
 # Dependencies
 /node_modules
 
