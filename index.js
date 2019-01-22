@@ -15,6 +15,9 @@ if (process.env.NODE_ENV != 'production') {
     app.use('/bundle.js', (req, res) => res.sendFile(`${__dirname}/bundle.js`));
 }
 
+
+app.use(express.static("./public"));
+
 app.get('*', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
