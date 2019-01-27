@@ -8,22 +8,29 @@ export default class MakePhoto extends Component {
         this.takePicture = this.takePicture.bind(this);
     }
 
+    // takePicture() {
+    //
+    //     const cameraView = this.camera.video,
+    //         cameraOutput = this.img,
+    //         cameraSensor = document.querySelector("#camera--sensor");
+    //
+    //
+    //
+    //     cameraSensor.width = cameraView.videoWidth;
+    //     cameraSensor.height = cameraView.videoHeight;
+    //     cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+    //     cameraOutput.src = cameraSensor.toDataURL("image/webp");
+    //
+    //
+    // }
+
     takePicture() {
-
-        const cameraView = this.camera.video,
-            cameraOutput = this.img,
-            cameraSensor = document.querySelector("#camera--sensor");
-
-
-
-        cameraSensor.width = cameraView.videoWidth;
-        cameraSensor.height = cameraView.videoHeight;
-        cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
-        cameraOutput.src = cameraSensor.toDataURL("image/webp");
-
-
+        this.camera.capture()
+            .then(blob => {
+                this.img.src = URL.createObjectURL(blob);
+                this.img.onload = () => { URL.revokeObjectURL(this.src); };
+            });
     }
-
 
 
     render() {
