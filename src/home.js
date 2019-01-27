@@ -1,5 +1,6 @@
 import React from "react";
 import MakePhoto from "./makephoto";
+import axios from "./axios";
 
 export default class Home extends React.Component{
     constructor() {
@@ -8,13 +9,20 @@ export default class Home extends React.Component{
         this.state = {messageName: "",
             messagePhone: "",
             messageEmail: "",
+            picture: "",
+            okMessage: false,
+            errorFeedback: false,
             loadCamera: false};
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.takePhoto = this.takePhoto.bind(this);
+        this.pictureToInput = this.pictureToInput.bind(this);
     }
 
+    pictureToInput(img) {
+        this.setState({picture: img});
+    }
 
     handleChange(e) {
         this.setState({
@@ -24,6 +32,34 @@ export default class Home extends React.Component{
 
     handleSubmit(e) {
         e.preventDefault();
+
+        const {name, email, phone } = this.state;
+
+        if(!name || !email || !phone) {
+            if(!name) {
+                this.setState({messageName: "Your name", errorClassEmail: "errorinput"});
+            }
+
+            if(!email) {
+                this.setState({messageEmail: "Your email", errorClassName: "errorinput"});
+            }
+
+            if(!phone) {
+                this.setState({messagePhone: "Your phoe", errorClassName: "errorinput"});
+            }
+
+            return;
+        }
+
+        axios.post("/sendmessage", this.state).then(resp=> {
+            if(resp.data.success) {
+                this.setState({okMessage: true});
+            } else {
+                this.setState({errorFeedback: true});
+            }
+        });
+
+
     }
 
 
@@ -34,6 +70,7 @@ export default class Home extends React.Component{
 
     render() {
 
+
         return (
             <div className="mx-auto">
                 <div className="col-sm-6">
@@ -41,8 +78,10 @@ export default class Home extends React.Component{
                         <img src="me-club-logo.png" />
                     </div>
 
+                    {this.state.okMessage && <div className="row"><h1>Thank you your message, we call you soon as possible!</h1></div>}
+                    {this.state.errorFeedback && <div className="row"><h1>We are sorry, but something be wrong, please fill it once again! Thank you!</h1></div>}
 
-
+                    {!this.state.okMessage &&
                     <div className="row p-5">
                         <form onSubmit={this.handleSubmit} className="form-horizontal w-100">
 
@@ -52,7 +91,7 @@ export default class Home extends React.Component{
                                     <div className="input-group-prepend">
                                         <span className="input-group-text" id="basic-addon1"><i className="fas fa-user"></i></span>
                                     </div>
-                                    <input type="text" className="form-control" placeholder="Your Name" aria-label="name" aria-describedby="basic-addon1" name="name" onChange={this.handleChange}/>
+                                    <input type="text" className="form-control" placeholder="Your Name" aria-label="name" aria-describedby="basic-addon1" name="name" onChange={this.handleChange} />
                                 </div>
                             </div>
 
@@ -90,6 +129,13 @@ export default class Home extends React.Component{
                                 </div>
                             </div>
 
+                            <input type="hidden" name="sendPicture" value={this.state.picture} onChange={this.handleChange}/>
+
+                            <div className="form-group">
+                                {this.state.loadCamera &&<MakePhoto pictureToInput = {this.pictureToInput}/> }
+                            </div>
+
+
                             <div className="form-group">
                                 <div className="input-group mb-3 justify-content-center">
                                     <button className = "btn btn-primary mt-5 mb-5">Send Email</button>
@@ -98,14 +144,14 @@ export default class Home extends React.Component{
 
 
 
+
+
+
                         </form>
-                    </div>
+                    </div>}
 
                 </div>
 
-                <div className="col-sm-6">
-                    {this.state.loadCamera &&<MakePhoto /> }
-                </div>
             </div>
 
         );
