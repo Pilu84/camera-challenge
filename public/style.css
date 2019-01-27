@@ -30,13 +30,6 @@ body {
     display: block;
 }
 
-#camera--sensor{
-    position: fixed !important;
-    height: 100% !important;
-    width: 100% !important;
-    object-fit: cover !important;
-}
-
-#camera--sensor{
-    transform: scaleX(-1) !important;
+.non-visible {
+    display: none;
 }
