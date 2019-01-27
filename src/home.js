@@ -1,4 +1,5 @@
 import React from "react";
+import MakePhoto from "./makephoto";
 
 export default class Home extends React.Component{
     constructor() {
@@ -6,7 +7,8 @@ export default class Home extends React.Component{
 
         this.state = {messageName: "",
             messagePhone: "",
-            messageEmail: ""};
+            messageEmail: "",
+            loadCamera: false};
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -24,17 +26,22 @@ export default class Home extends React.Component{
         e.preventDefault();
     }
 
+
     takePhoto() {
-        
+
+        this.setState({loadCamera: true});
     }
 
     render() {
+
         return (
             <div className="mx-auto">
                 <div className="col-sm-6">
                     <div className="row p-5 bg-primary rounded">
                         <img src="me-club-logo.png" />
                     </div>
+
+
 
                     <div className="row p-5">
                         <form onSubmit={this.handleSubmit} className="form-horizontal w-100">
@@ -97,7 +104,7 @@ export default class Home extends React.Component{
                 </div>
 
                 <div className="col-sm-6">
-
+                    {this.state.loadCamera &&<MakePhoto /> }
                 </div>
             </div>
 

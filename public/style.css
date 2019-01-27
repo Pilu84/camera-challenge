@@ -1,3 +1,42 @@
 body {
     font-family: "Gudea-Bold", "Gudea-Regular", serif !important;
 }
+
+.preview {
+    position: relative;
+}
+
+.captureContainer {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    z-index: 1;
+    bottom: 0;
+    width: 100%;
+}
+
+.captureButton {
+    background-color: #fff;
+    border-radius: 50%;
+    height: 56px;
+    width: 56px;
+    color: #000;
+    margin: 20px;
+},
+.captureImage {
+    width: 100%;
+}
+.visible {
+    display: block;
+}
+
+#camera--sensor{
+    position: fixed !important;
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+#camera--sensor{
+    transform: scaleX(-1) !important;
+}
