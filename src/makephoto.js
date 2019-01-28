@@ -1,13 +1,12 @@
 import React from 'react';
-
-
+import axios from './axios';
 
 export default class MakePhoto extends React.Component {
 
     constructor(props) {
         super(props);
         this.takePicture = this.takePicture.bind(this);
-        this.state = {picture: "", pictureToInput: props.pictureToInput};
+        this.state = {pictureToInput: props.pictureToInput, test: "", uploadProgress: props.uploadProgress, uploadOk: props.uploadOk, uploadedPic: props.uploadedPic};
     }
 
 
@@ -18,21 +17,38 @@ export default class MakePhoto extends React.Component {
             cameraOutput = this.img,
             cameraSensor = this.canv;
 
+        const width = cameraView.videoWidth / 2;
+        const height = cameraView.videoHeight / 2;
 
-        cameraSensor.width = cameraView.videoWidth;
-        cameraSensor.height = cameraView.videoHeight;
-        cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+        cameraSensor.width = width;
+        cameraSensor.height = height;
+        cameraSensor.getContext("2d").drawImage(cameraView, 0, 0, width, height);
         cameraOutput.src = cameraSensor.toDataURL("image/webp");
 
 
         this.setState({picture: cameraOutput});
 
-        this.state.pictureToInput(cameraOutput.src);
+        var dataUrl = cameraSensor.toDataURL('image/jpeg', 0.7).replace('data:image/jpeg;base64,', '');
+
+
+
+        let sendData = {picture: JSON.stringify(dataUrl)};
+
+        axios.post("/makepdf", sendData).then(resp => {
+            console.log("a resp.data: ", resp.data);
+            if(resp.data.succes) {
+                this.state.uploadOk();
+                this.state.uploadedPic(resp.data.uploaded);
+            }
+        });
+
 
     }
 
 
     componentDidMount() {
+
+        this.state.uploadProgress();
 
         if (navigator.mediaDevices === undefined) {
             navigator.mediaDevices = {};
@@ -89,7 +105,7 @@ export default class MakePhoto extends React.Component {
                 <div className="captureContainer" onClick={this.takePicture}>
                     <div className="captureButton"></div>
                 </div>
-
+                <img src={this.state.test} />
             </div>
         );
     }

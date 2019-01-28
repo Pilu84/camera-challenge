@@ -12,29 +12,42 @@ export default class Home extends React.Component{
             picture: "",
             okMessage: false,
             errorFeedback: false,
+            upload: true,
             loadCamera: false};
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.takePhoto = this.takePhoto.bind(this);
-        this.pictureToInput = this.pictureToInput.bind(this);
+        this.uploadOk = this.uploadOk.bind(this);
+        this.uploadProgress = this.uploadProgress.bind(this);
+        this.uploadedPic = this.uploadedPic.bind(this);
+
     }
 
-    pictureToInput(img) {
+    uploadedPic(img) {
+        console.log("az img: ", img);
         this.setState({picture: img});
+    }
+
+    uploadProgress() {
+        this.setState({upload: false});
+    }
+
+    uploadOk() {
+        this.setState({upload: true});
     }
 
     handleChange(e) {
         this.setState({
             [e.target.name]: e.target.value
         });
+
     }
 
     handleSubmit(e) {
         e.preventDefault();
 
         const {name, email, phone } = this.state;
-
         if(!name || !email || !phone) {
             if(!name) {
                 this.setState({messageName: "Your name", errorClassEmail: "errorinput"});
@@ -50,6 +63,7 @@ export default class Home extends React.Component{
 
             return;
         }
+
 
         axios.post("/sendmessage", this.state).then(resp=> {
             if(resp.data.success) {
@@ -123,31 +137,24 @@ export default class Home extends React.Component{
                                 </div>
                             </div>
 
-                            <div className="form-group">
-                                <div className="input-group justify-content-center">
-                                    <button className = "btn btn-primary mt-5" onClick={this.takePhoto}>Take a picture</button>
-                                </div>
-                            </div>
-
-                            <input type="hidden" name="sendPicture" value={this.state.picture} onChange={this.handleChange}/>
-
-                            <div className="form-group">
-                                {this.state.loadCamera &&<MakePhoto pictureToInput = {this.pictureToInput}/> }
-                            </div>
-
 
                             <div className="form-group">
                                 <div className="input-group mb-3 justify-content-center">
-                                    <button className = "btn btn-primary mt-5 mb-5">Send Email</button>
+                                    {this.state.upload && <button className = "btn btn-primary mt-5 mb-5">Send Email</button>}
                                 </div>
                             </div>
 
-
-
-
-
-
                         </form>
+
+
+                        <div className="row">
+                            <div className="mb-3 justify-content-center">
+                                <button className = "btn btn-primary mt-5" onClick={this.takePhoto}>Take a picture</button>
+                            </div>
+                            <div className="col-sm-6">
+                            </div>
+                            {this.state.loadCamera &&<MakePhoto uploadOk = {this.uploadOk} uploadProgress = {this.uploadProgress} uploadedPic = {this.uploadedPic}/> }
+                        </div>
                     </div>}
 
                 </div>
