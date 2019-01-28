@@ -6,7 +6,7 @@ export default class MakePhoto extends React.Component {
     constructor(props) {
         super(props);
         this.takePicture = this.takePicture.bind(this);
-        this.state = {pictureToInput: props.pictureToInput, test: "", uploadProgress: props.uploadProgress, uploadOk: props.uploadOk, uploadedPic: props.uploadedPic};
+        this.state = {pictureToInput: props.pictureToInput, test: "", uploadProgress: props.uploadProgress, uploadOk: props.uploadOk, uploadedPic: props.uploadedPic, stream: ""};
     }
 
 
@@ -35,10 +35,23 @@ export default class MakePhoto extends React.Component {
         let sendData = {picture: JSON.stringify(dataUrl)};
 
         axios.post("/makepdf", sendData).then(resp => {
-            console.log("a resp.data: ", resp.data);
+
             if(resp.data.succes) {
                 this.state.uploadOk();
                 this.state.uploadedPic(resp.data.uploaded);
+                var video = document.querySelector('video');
+                var track = "";
+
+                if ("srcObject" in video) {
+                    track = video.srcObject.getTracks()[0];
+                    track.stop();
+                } else {
+                    track = video.src.getTracks()[0];
+                    track.stop();
+                }
+
+                video = null;
+
             }
         });
 
@@ -49,6 +62,8 @@ export default class MakePhoto extends React.Component {
     componentDidMount() {
 
         this.state.uploadProgress();
+
+
 
         if (navigator.mediaDevices === undefined) {
             navigator.mediaDevices = {};
@@ -70,6 +85,7 @@ export default class MakePhoto extends React.Component {
             };
         }
 
+        let loacalstream = "";
         navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: "environment" } })
             .then(function(stream) {
                 var video = document.querySelector('video');
@@ -83,10 +99,14 @@ export default class MakePhoto extends React.Component {
                 video.onloadedmetadata = function() {
                     video.play();
                 };
+
+
             })
             .catch(function(err) {
                 console.log(err.name + ": " + err.message);
             });
+        console.log("a local: ", loacalstream);
+        this.setState({stream: loacalstream});
     }
 
 

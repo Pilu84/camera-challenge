@@ -25,7 +25,6 @@ export default class Home extends React.Component{
     }
 
     uploadedPic(img) {
-        console.log("az img: ", img);
         this.setState({picture: img});
     }
 
@@ -58,7 +57,7 @@ export default class Home extends React.Component{
             }
 
             if(!phone) {
-                this.setState({messagePhone: "Your phoe", errorClassName: "errorinput"});
+                this.setState({messagePhone: "Your phone", errorClassName: "errorinput"});
             }
 
             return;
@@ -66,9 +65,12 @@ export default class Home extends React.Component{
 
 
         axios.post("/sendmessage", this.state).then(resp=> {
-            if(resp.data.success) {
-                this.setState({okMessage: true});
-            } else {
+            
+            if(resp.data.succes) {
+                this.setState({okMessage: true, loadCamera: false});
+
+            }
+            if(resp.data.error) {
                 this.setState({errorFeedback: true});
             }
         });
@@ -84,7 +86,7 @@ export default class Home extends React.Component{
 
     render() {
 
-
+        console.log("ok: ", this.state.okMessage);
         return (
             <div className="mx-auto">
                 <div className="col-sm-6">
@@ -92,7 +94,7 @@ export default class Home extends React.Component{
                         <img src="me-club-logo.png" />
                     </div>
 
-                    {this.state.okMessage && <div className="row"><h1>Thank you your message, we call you soon as possible!</h1></div>}
+                    {this.state.okMessage && <div className="row"><h1>Thank you your message, we contact you as soon as possible!</h1></div>}
                     {this.state.errorFeedback && <div className="row"><h1>We are sorry, but something be wrong, please fill it once again! Thank you!</h1></div>}
 
                     {!this.state.okMessage &&
@@ -153,7 +155,7 @@ export default class Home extends React.Component{
                             </div>
                             <div className="col-sm-6">
                             </div>
-                            {this.state.loadCamera &&<MakePhoto uploadOk = {this.uploadOk} uploadProgress = {this.uploadProgress} uploadedPic = {this.uploadedPic}/> }
+                            {this.state.loadCamera && <MakePhoto uploadOk = {this.uploadOk} uploadProgress = {this.uploadProgress} uploadedPic = {this.uploadedPic}/> }
                         </div>
                     </div>}
 

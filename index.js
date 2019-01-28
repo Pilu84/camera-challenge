@@ -6,6 +6,7 @@ const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 const PDFDocument = require ('pdfkit');
 const fs = require('fs');
+const mail = require('./sendmail');
 
 app.use(compression());
 
@@ -41,29 +42,38 @@ app.use(function(req, res, next){
 app.use(express.static("./public"));
 app.use(express.static("./uploads"));
 
-app.post("/makepdf", (req, res) => {
+app.post("/makepdf", async (req, res) => {
 
     const imgToPdf = 'data:image/jpeg;base64,' + req.body.picture;
     const doc = new PDFDocument;
     const filename = Date.now();
 
-    doc.pipe(fs.createWriteStream('./uploads/' + filename +'.pdf'));
+    function makepdf(filename, imgToPdf) {
+        doc.pipe(fs.createWriteStream('./uploads/' + filename +'.pdf'));
 
-    doc.image(imgToPdf, {
-        align: 'center',
-        valign: 'center'
-    });
+        doc.image(imgToPdf, {
+            align: 'center',
+            valign: 'center'
+        });
 
-    doc.end();
+        doc.end();
 
-    res.json({succes: true, uploaded: filename + '.pdf'});
+        return filename;
+    }
+
+    const createPdf = await(makepdf(filename, imgToPdf));
+
+    res.json({succes: true, uploaded: createPdf});
 
 
 });
 
 
-app.post("/sendmessage", (req, res) => {
-    
+app.post("/sendmessage", async (req, res) => {
+
+    await mail.sendMail(req.body.name, req.body.phone, req.body.email, req.body.message, req.body.picture).catch(console.error);
+
+    res.json({succes: true});
 
 
 });
